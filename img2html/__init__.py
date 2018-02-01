@@ -15,7 +15,7 @@ def main():
                         help='background color (#RRGGBB format)')
     parser.add_argument('-s', '--size', default=10, type=int, metavar='(4~30)',
                         help='font size (int)')
-    parser.add_argument('-c', '--char', default='爱', metavar='CHAR',
+    parser.add_argument('-c', '--char', default='■', metavar='CHAR',
                         help='characters')
     parser.add_argument('-t', '--title', default='img2html by xlzd', metavar='TITLE',
                         help='html title')

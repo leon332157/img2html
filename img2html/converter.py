@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-# encoding=utf-8
-
 from __future__ import print_function, unicode_literals
+from past.builtins import xrange
 
 from collections import namedtuple
 from itertools import cycle
@@ -21,23 +19,42 @@ TEMPLATE = '''
     <meta charset="utf-8">
     <title>{{ title }}</title>
     <style type="text/css">
-        body {
-            margin: 0px; padding: 0px; line-height:100%; letter-spacing:0px; text-align: center;
-            min-width: {{width}}px;
-            width: auto !important;
+         .img{
+            margin: 0px; padding:  0px; line-height:100%; letter-spacing:0px; text-align: center;
             font-size: {{size}}px;
-            background-color: #{{background}};
+            background-color: {{background}};
             font-family: {{font_family}};
         }
+        
     </style>
 </head>
-<body>
-<div>
+<body class="img">
+<div class="img">
 {% for group in html_image %}
     {% for item in group %}<font color="#{{ item.color }}">{{ item.char }}</font>{% endfor %}
-    <br>
 {% endfor %}
 </div>
+<script>function show() {
+  var myWidth = 0, myHeight = 0;
+  if( typeof( window.innerWidth ) == 'number' ) {
+    //Non-IE
+    myWidth = window.innerWidth;
+    myHeight = window.innerHeight;
+  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+    //IE 6+ in 'standards compliant mode'
+    myWidth = document.documentElement.clientWidth;
+    myHeight = document.documentElement.clientHeight;
+  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+    //IE 4 compatible
+    myWidth = document.body.clientWidth;
+    myHeight = document.body.clientHeight;
+  }
+  document.getElementsByTagName('body')[0].setAttribute("height",myHeight);
+  document.getElementsByTagName('body')[0].setAttribute("width",myWidth);
+  document.getElementsByClassName('img')[0].setAttribute("height",myHeight);
+  document.getElementsByClassName('img')[0].setAttribute("width",myWidth);
+}</script>
+<script>show() </script>
 </body>
 </html>'''
 
@@ -45,9 +62,9 @@ TEMPLATE = '''
 class Img2HTMLConverter(object):
     def __init__(self,
                  font_size=10,
-                 char='䦗',
-                 background='#000000',
-                 title='img2html by xlzd',
+                 char='■',
+                 background='black',
+                 title='Image in HTML',
                  font_family='monospace'):
         self.font_size = font_size
         self.background = background
@@ -66,19 +83,19 @@ class Img2HTMLConverter(object):
         progress = 0.0
         step = 1. / (col_blocks * row_blocks)
 
-        for col in xrange(col_blocks):
+        for col in range(col_blocks):
             render_group = RenderGroup()
-            for row in xrange(row_blocks):
+            for row in range(row_blocks):
                 pixels = []
-                for y in xrange(self.font_size):
-                    for x in xrange(self.font_size):
+                for y in range(self.font_size):
+                    for x in range(self.font_size):
                         point = Point(row * self.font_size + x, col * self.font_size + y)
                         if point.x >= width or point.y >= height:
                             continue
                         pixels.append(Pixel(*image.getpixel(point)[:3]))
                 average = self.get_average(pixels=pixels)
                 color = self.rgb2hex(average)
-                render_item = RenderItem(color=color, char=self.char.next())
+                render_item = RenderItem(color=color, char=next(self.char))
                 render_group.append(render_item)
 
                 progress += step
